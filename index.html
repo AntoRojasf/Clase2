@@ -26,7 +26,7 @@
     <body>
 
         <header>
-            <h1>Tufte refers to data-ink as the non-erasable ink used for the presentation of data</h1>
+            <h1>Ejercicio clase 2</h1>
         </header>
 
         <main>
@@ -37,7 +37,6 @@
                 <p>Con una <a href="https://datavizcatalogue.com/ES/metodos/grafica_de_linea.html" target="_blank">gráfica de línea</a></p>
                 <div>
                     <svg viewBox="0 0 680 210">
-                        <!-- El grupo se voltea verticalmente para que Y crezca hacia arriba (en SVG crece hacia abajo por defecto) -->
                         <g transform="translate(0,195) scale(1,-1)" id="lineas"></g>
                         <g id="years"></g>
                     </svg>
@@ -53,6 +52,27 @@
                 </div>
             </article>
 
+            <!-- GRÁFICA 3: línea terremotos -->
+            <article>
+                <h2>Magnitud de los terremotos más importantes en Chile</h2>
+                <p>Con una <a href="https://datavizcatalogue.com/ES/metodos/grafica_de_linea.html" target="_blank">gráfica de línea</a></p>
+                <div>
+                    <svg viewBox="0 0 500 210">
+                        <g transform="translate(0,195) scale(1,-1)" id="lineas2"></g>
+                        <g id="years2"></g>
+                    </svg>
+                </div>
+            </article>
+
+            <!-- GRÁFICA 4: barras terremotos -->
+            <article>
+                <h2>Víctimas fatales por terremoto en Chile</h2>
+                <p>Con una <a href="https://datavizcatalogue.com/ES/metodos/graficos_de_barras.html" target="_blank">gráfica de barras</a></p>
+                <div>
+                    <svg viewBox="0 0 500 100" id="barras2"></svg>
+                </div>
+            </article>
+
         </main>
 
         <footer>
@@ -60,36 +80,30 @@
         </footer>
 
         <script>
-            // ── GRÁFICA 1: línea ──────────────────────────────────────────────
+            // ── GRÁFICA 1: línea población ────────────────────────────────────
 
             // Fuente: https://es.wikipedia.org/wiki/Anexo:Crecimiento_poblacional_de_Santiago_de_Chile
             var lineal = {
-                censos:   [1820,  1854,   1865,   1888,   1920,   1940,   1952,    1960,    1982,    1992,    2002,    2012, 2024],
+                censos:   [1820,  1854,   1865,   1888,   1920,   1940,   1952,    1960,    1982,    1992,    2002,    2012,    2024],
                 censados: [46000, 69018, 115337, 256000, 507296, 952075, 1350409, 1907378, 3899619, 4729118, 5428590, 7057491, 8420729]
             };
 
-            var coordenadas = ""; // acumulará los pares x,y de la polyline
-            var etiquetas   = ""; // acumulará los textos con los años
+            var coordenadas = "";
+            var etiquetas   = "";
 
             lineal.censados.forEach(function(poblacion, i) {
-                // x: cada censo se separa 50 unidades; sumamos 7 para centrar el texto
                 var x = (i * 50) + 7;
-                // y: escalamos la población para que quepa en el SVG (÷ 40000)
                 var y = Math.round(poblacion * 0.000025);
-
                 coordenadas += x + "," + y + " ";
-                etiquetas += `<text x="${x - 7}" y="205" font-size="6">${lineal.censos[i]}</text>`;
+                etiquetas   += `<text x="${x - 7}" y="205" font-size="6">${lineal.censos[i]}</text>`;
             });
 
-            // Dibujamos la línea conectando todos los puntos
             document.querySelector("#lineas").innerHTML =
                 `<polyline points="${coordenadas}" fill="none" stroke="black" stroke-width="0.5" />`;
-
-            // Agregamos los años debajo de la línea
             document.querySelector("#years").innerHTML = etiquetas;
 
 
-            // ── GRÁFICA 2: barras ─────────────────────────────────────────────
+            // ── GRÁFICA 2: barras población ───────────────────────────────────
 
             // Fuente: https://es.wikipedia.org/wiki/Anexo:Regiones_de_Chile_por_población
             var regiones = [
@@ -103,15 +117,57 @@
             ];
 
             regiones.forEach(function(d, i) {
-                // El ancho de cada barra es proporcional a la población
                 var ancho = d.numero / 20000;
-
-                // Cada fila baja 15 unidades con translate
                 document.querySelector("#barras").innerHTML +=
                     `<g transform="translate(0, ${i * 15})">
                         <rect x="0" y="0" width="${ancho}" height="10" />
                         <text x="3" y="7" fill="white" font-size="5">${d.region}</text>
                         <text x="${ancho + 3}" y="7" font-size="6">${new Intl.NumberFormat("es-ES").format(d.numero)} habitantes</text>
+                    </g>`;
+            });
+
+
+            // ── GRÁFICA 3: línea terremotos ───────────────────────────────────
+
+            // Fuente: https://es.wikipedia.org/wiki/Anexo:Terremotos_en_Chile
+            var terremotos = {
+                anios:      [1906, 1922, 1939, 1960, 1985, 1995, 2010, 2014, 2015],
+                magnitudes: [8.4,  8.5,  7.8,  9.5,  8.0,  8.0,  8.8,  8.2,  8.4]
+            };
+
+            var coordenadas2 = "";
+            var etiquetas2   = "";
+
+            terremotos.magnitudes.forEach(function(magnitud, i) {
+                var x = (i * 55) + 7;
+                var y = Math.round((magnitud - 7) * 100);
+                coordenadas2 += x + "," + y + " ";
+                etiquetas2   += `<text x="${x - 7}" y="205" font-size="6">${terremotos.anios[i]}</text>`;
+            });
+
+            document.querySelector("#lineas2").innerHTML =
+                `<polyline points="${coordenadas2}" fill="none" stroke="black" stroke-width="0.5" />`;
+            document.querySelector("#years2").innerHTML = etiquetas2;
+
+
+            // ── GRÁFICA 4: barras terremotos ──────────────────────────────────
+
+            // Fuente: https://es.wikipedia.org/wiki/Anexo:Terremotos_en_Chile
+            var victimas = [
+                { lugar: "Chillán 1939",  numero: 5648 },
+                { lugar: "Valdivia 1960", numero: 2000 },
+                { lugar: "Maule 2010",    numero:  525 },
+                { lugar: "Iquique 2014",  numero:    6 },
+                { lugar: "Illapel 2015",  numero:   15 }
+            ];
+
+            victimas.forEach(function(d, i) {
+                var ancho = d.numero / 15;
+                document.querySelector("#barras2").innerHTML +=
+                    `<g transform="translate(0, ${i * 15})">
+                        <rect x="0" y="0" width="${ancho}" height="10" fill="#c0392b" />
+                        <text x="3" y="7" fill="white" font-size="5">${d.lugar}</text>
+                        <text x="${ancho + 3}" y="7" font-size="6">${new Intl.NumberFormat("es-ES").format(d.numero)} víctimas</text>
                     </g>`;
             });
         </script>
